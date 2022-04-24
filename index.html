@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+
+    <!-- Meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!--*************************************-->
+    <!--**** IMPORT EXTERNAL Style Sheet ****-->
+    <link rel="stylesheet" href="css/style.css">
+    <!--*************************************-->
+
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+
+
+    <title>Final Project</title>
+
+</head>
+
+<style>
+    .container {
+      height: 200px;
+      position: relative;
+      border: 3px solid green;
+    }
+    
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .zoom {
+  padding: 50px;
+  transition: transform .2s; /* Animation */
+  margin: 0 auto;
+}
+
+.zoom:hover {
+  transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+
+
+    
+    </style>
+
+
+
+
+
+
+
+<script>
+
+    //backupPrice 
+    solanaPrice = 100
+
+    //find solana price 
+    var url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd";
+
+var xhr = new XMLHttpRequest();
+xhr.open("GET", url);
+
+xhr.setRequestHeader("accept", "application/json");
+
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4) {
+    console.log(xhr.status);
+    console.log(JSON.parse(xhr.responseText).solana.usd);
+    solanaPrice = Number(JSON.parse(xhr.responseText).solana.usd);
+  }
+};
+
+xhr.send();
+
+
+
+let loaded_viz = false;
+
+
+let backUpData =[
+    {
+        "address": "GitYucwpNcg6Dx1Y15UQ9TQn8LZMX1uuqQNn8rXxEWNC",
+        "lamports": 9208358874605440
+    },
+    {
+        "address": "3yFwqXBfZY4jBVUafQ1YEXw189y2dN3V5KQq9uzBDy1E",
+        "lamports": 8084805000020000
+    },
+    {
+        "address": "9QgXqrgdbVU8KcpfskqJpAXKzbaYQJecgMAruSWoXDkM",
+        "lamports": 6600000050000911
+    },
+    {
+        "address": "8BseXT9EtoEhBTKFFYkwTnjKSUZwhtmdKY2Jrj8j45Rt",
+        "lamports": 4562873627201827
+    },
+    {
+        "address": "FbGeZS8LiPCZiFpFwdUUeF2yxXtSsdfJoHTsVMvM8STh",
+        "lamports": 4508491957069560
+    },
+    {
+        "address": "52C9T2T7JRojtxumYnYZhyUmrN7kqzvCLc4Ksvjk7TxD",
+        "lamports": 4369520050010911
+    },
+    {
+        "address": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        "lamports": 4120873735015009
+    },
+    {
+        "address": "JBpj7yp4Afvb71TmanVwJZXGeX4kqbGFvjCFCRo3EbTM",
+        "lamports": 3605318839873504
+    },
+    {
+        "address": "BQeizWYD2dHmQq1b6HQqwBPrLWKitnhv5K82ZnRNPL8z",
+        "lamports": 3473708432355185
+    },
+    {
+        "address": "H8VT3V6EDiYiQqmeDgqZJf4Tt76Qe6WZjPhighAGPL5T",
+        "lamports": 3313266229792128
+    },
+    {
+        "address": "H6vpvhyv8nVeXsoE3GCyZ4q2EViENnzwTJzw5fe8LnFV",
+        "lamports": 3005482542001215
+    },
+    {
+        "address": "HcTDaQXACrWUGZY6q1mWYFoxaQvqiBRR1D7JqFJgXrHM",
+        "lamports": 2928381727063304
+    },
+    {
+        "address": "FWznbcNXWQuHTawe9RxvQ2LdCENssh12dsznf4RiouN5",
+        "lamports": 2828028554844208
+    },
+    {
+        "address": "EJRJswH9LyjhAfBWwPBvat1LQtrJYK4sVUzsea889cQt",
+        "lamports": 2758809594020067
+    },
+    {
+        "address": "Amf2mf2Ciap5wYAEKDtGoQHfHPWaKbyFYhutMK46hTRF",
+        "lamports": 2532319759604108
+    },
+    {
+        "address": "8PjJTv657aeN9p5R2WoM6pPSz385chvTTytUWaEjSjkq",
+        "lamports": 2502414688141828
+    },
+    {
+        "address": "AHB94zKUASftTdqgdfiDSdnPJHkEFp7zX3yMrcSxABsv",
+        "lamports": 2502414681045237
+    },
+    {
+        "address": "3D91zLQPRLamwJfGR5ZYMKQb4C18gsJNaSdmB6b2wLhw",
+        "lamports": 2502395550979704
+    },
+    {
+        "address": "AogcwQ1ubM76EPMhSD5cw1ES4W5econvQCFmBL6nTW1",
+        "lamports": 2502390137389273
+    },
+    {
+        "address": "3bHbMa5VW3np5AJazuacidrN4xPZgwhcXigmjwHmBg5e",
+        "lamports": 2502383452781620
+    }
+]
+
+
+
+function viz_1()
+{
+    loaded_viz=true
+
+    document.body.style.zoom = "30%";
+
+
+//create 20 place holders
+for (let index = 0; index < 20; index++) {
+
+    //text
+    var hold_text = document.createElement('h1')
+    //console.log(Math.round(backUpData[index].lamports * 0.000000001))
+    hold_text.innerHTML = String((Math.round(backUpData[index].lamports * 0.000000001))) + " SOL"
+    hold_text.style.textAlign="center"
+    hold_text.style.color ="white"
+    hold_text.style.fontSize = "50px"
+
+    //text2
+    var hold_text2 = document.createElement('h1')
+    //console.log(Math.round(backUpData[index].lamports * 0.000000001))
+    hold_text2.innerHTML = backUpData[index].address.slice(0,3) +"..." +backUpData[index].address.slice(-3) 
+    hold_text2.style.textAlign="center"
+    hold_text2.style.color ="white"
+    hold_text2.style.fontSize = "50px"
+
+    //img
+    var hold_img = document.createElement('img')
+    hold_img.id = index;
+    hold_img.src = "https://media1.giphy.com/media/oNZ7uxuxr4ZohOUVpM/giphy.gif?cid=ecf05e4722v9ppcv9qsyu89ruxq87u1yrwx72irkpr7gosz2&rid=giphy.gif&ct=s"
+    //div
+    var hold_everything = document.createElement('div')
+    hold_everything.appendChild(hold_img)
+    hold_everything.appendChild(hold_text)
+    hold_everything.appendChild(hold_text2)
+    hold_everything.className="column"
+    hold_everything.addEventListener("click",goAudit)
+    
+    //add to collection
+    document.getElementById('hold_img').appendChild(hold_everything);
+    
+}
+
+
+}
+
+function goAudit(e)
+{
+
+    document.getElementById("audit_hud").style.display="block"
+    console.log("im here")
+    console.log(e.target.id)
+    console.log(backUpData)
+    console.log(backUpData[Number(e.target.id)].address)
+    console.log(backUpData[Number(e.target.id)].lamports)
+    document.getElementById("user_info").innerHTML = backUpData[Number(e.target.id)].address
+    document.getElementById("audit_text_1").innerHTML = "Whale Rank "+ String(Number(e.target.id)+1)
+    document.getElementById("audit_text_2").innerHTML = String((Math.round(backUpData[Number(e.target.id)].lamports * 0.000000001))) + " SOL"
+    var USD = ((Math.round(backUpData[Number(e.target.id)].lamports * 0.000000001))*solanaPrice)/1000000
+    document.getElementById("audit_text_3").innerHTML = "$"+String(Math.round(USD)) + " Million"
+    console.log(Math.abs(Math.round(backUpData[Number(e.target.id)].lamports * 0.000000001))*solanaPrice)
+
+    document.getElementById('hold_tx').textContent=""
+    var url = "https://explorer-api.mainnet-beta.solana.com/";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+        console.log(xhr.status);
+        console.log(JSON.parse(xhr.responseText).result.value);
+
+        var programType =JSON.parse(xhr.responseText).result.value.data.program
+        if(programType!="stake")
+        {
+            programType="Personal Account"
+        }else{
+            programType="Solana Validator"
+        }
+
+        document.getElementById("audit_text_4").innerHTML = programType
+    }};
+
+    var data ={"method":"getAccountInfo","jsonrpc":"2.0","params":[backUpData[Number(e.target.id)].address,{"encoding":"jsonParsed","commitment":"confirmed"}],"id":"e2f8f07c-66d6-48de-8689-ddfdaf3bbd9a"};
+
+    xhr.send(JSON.stringify(data));
+
+
+
+    //account transactions 
+
+
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open("POST", url);
+
+    xhr2.setRequestHeader("Content-Type", "application/json");
+
+    xhr2.onreadystatechange = function () {
+    if (xhr2.readyState === 4) {
+        console.log(xhr2.status);
+        console.log(JSON.parse(xhr2.responseText).result);
+        var txData = JSON.parse(xhr2.responseText).result
+        document.getElementById("audit_text_5").innerHTML = String(JSON.parse(xhr2.responseText).result.length) + " Recent Transactions"
+
+        for (let index = 0; index < txData.length; index++) {
+            var hold_link = document.createElement('a')
+            utcSeconds = txData[index].blockTime
+            var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+            d.setUTCSeconds(utcSeconds);
+            hold_link.innerHTML=  d
+            hold_link.style.color = "white"
+            hold_link.href = `https://solscan.io/tx/${txData[index].signature}`
+            hold_link.style.fontSize = "44px"
+            hold_link.target ="_blank"
+            var hold_div2 = document.createElement('div')
+            hold_div2.appendChild(hold_link)
+            document.getElementById('hold_tx').appendChild(hold_div2);
+            
+        }
+    }};
+
+    var data2 = {"method":"getConfirmedSignaturesForAddress2","jsonrpc":"2.0","params":[backUpData[Number(e.target.id)].address,{"limit":25}],"id":"5272f3c1-3beb-48be-a543-dcaae62cdba1"};
+
+    xhr2.send(JSON.stringify(data2));
+
+
+
+
+    
+}
+
+
+
+
+
+
+
+function goFish()
+{
+
+    console.log("going Fishing")
+
+    
+
+
+
+  document.getElementById("user_info").innerHTML = "Please wait Fishing for Whales"
+  console.log("making request")
+  //document.getElementById("user_img").src = "https://media0.giphy.com/media/IKGxZJdhz9wYF8tiLf/giphy.gif?cid=ecf05e476ydn2ozgmuushirai8jl59jwscy382f83jc5l9k4&rid=giphy.gif&ct=s"
+  
+  var url = "https://explorer-api.mainnet-beta.solana.com/";
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", url);
+
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+        if(xhr.status==200)
+        {
+            document.getElementById("user_info").innerHTML = "Found 20 Whales"
+            document.getElementById("user_info").style.fontSize = "100px"
+            document.getElementById("user_img").style.display = "none"
+            backUpData = JSON.parse(xhr.responseText).result.value
+            if (loaded_viz==false) {
+                viz_1()
+            }
+
+            // document.getElementById("vis_info").style.display="block"
+            // document.getElementById("vis_1").style.display="block"
+        }else{
+            //just incase the rpc call fails use bakupData
+            document.getElementById("user_info").innerHTML = "Found 20 Whales"
+            document.getElementById("user_info").style.fontSize = "100px"
+            document.getElementById("user_img").style.display = "none"
+            console.log("backup data")
+            console.log(backUpData)
+            if (loaded_viz==false) {
+                viz_1()
+            }
+            //document.getElementById("user_info").innerHTML = "RPC Call Failed Try Again Later"
+        }
+        console.log(xhr.status);
+        console.log(JSON.parse(xhr.responseText).result.value);
+    }};
+
+  var data = `
+    {"jsonrpc":"2.0","id":1, "method":"getLargestAccounts"}
+  `;
+
+  xhr.send(data);
+}
+
+</script>
+
+
+<body style="background-color: black;">
+
+    <!-- <div id="my_HUD" style="display: block; height:100%;width:100%;z-index:1000;position:absolute;background: rgba(4, 58, 208, 0.9);"> -->
+
+    <div id="audit_hud"  style="position: absolute;background-color: black;width: 20%;height: 100%;margin-left: 200px;display: none;">
+        <img src="https://media4.giphy.com/media/WcC874avssjFAeWc3u/giphy.gif?cid=ecf05e47381sqrjea31tkig9z2o8km975pbr0f1e2vea4rg5&rid=giphy.gif&ct=s">
+        <h1 style="color: white;font-size: 100px;" id="audit_text_1"></h1>
+        <h4 style="color: white;">______________________</h4>
+        <h1 style="color: white;font-size: 100px;" id="audit_text_2"></h1>
+        <h1 style="color: white;font-size: 100px;" id="audit_text_3"></h1>
+        <h4 style="color: white;">______________________</h4>
+        <h1 style="color: white;font-size: 100px;" >Account Type</h1>
+      
+        <h1 style="color: white;font-size: 100px;" id="audit_text_4"></h1>
+        <h4 style="color: white;">______________________</h4>
+        <h1 style="color: white;font-size: 100px;" id="audit_text_5"></h1> 
+        <h1 style="color: white;font-size: 100px;" >Click to Inspect</h1> 
+        <div id="hold_tx"></div>    
+    </div>
+
+        <div  class="center">
+          <img  id="user_img" class="zoom" onclick="goFish()" src="https://media0.giphy.com/media/IKGxZJdhz9wYF8tiLf/giphy.gif?cid=ecf05e476ydn2ozgmuushirai8jl59jwscy382f83jc5l9k4&rid=giphy.gif&ct=s"></img>
+          <h1 id="user_info"  style="color: white;text-align: center;">Click to find Solana Whales</h1> 
+          <!-- <h3 id ="vis_info" style="color: white;display:none;">Visualization</h3>
+          <svg style="display: none;" id="vis_1" name="vis_1" class="default_svg"></svg> -->
+          
+          <div class="row" id="hold_img"></div>
+
+
+
+        </div>
+
+    
+
+
+</body>
+</html>
